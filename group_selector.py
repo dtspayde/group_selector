@@ -7,6 +7,7 @@ from pathlib import Path
 import itertools
 import json
 import operator
+import collections
 
 class Student(object):
     """ The Student class describes a student in the classroom
@@ -249,6 +250,13 @@ def main():
             for partner in group:
                 if partner != student:
                     classroom.dict_history[student.id_number][partner.id_number] += 1
+
+    histo = collections.Counter()
+    for sub_dicts in classroom.dict_history.values():
+        histo.update(sub_dicts.values())
+
+    for n_times in sorted(histo.keys()):
+        print(f'{n_times} = {int(histo[n_times]/2)}')
 
     classroom.store_student_history()
     return
