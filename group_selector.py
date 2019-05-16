@@ -92,6 +92,7 @@ class Classroom(object):
         self.student_ids = []
         self.dict_history = {}
         self.groups = []
+        self.shape_groups = {}
 
     def str_groups(self, groups = None):
         if groups is None:
@@ -234,8 +235,8 @@ def main():
     classroom.load_students()
     classroom.load_student_history()
 
-    d_groups = classroom.calculate_n_groups(3)
-    print(d_groups, sum(s*g for s, g in d_groups.items()))
+    classroom.shape_groups = classroom.calculate_n_groups(3)
+    print(classroom.shape_groups, sum(s*g for s, g in classroom.shape_groups.items()))
 
     success = False
     session = []
@@ -247,7 +248,7 @@ def main():
         random.shuffle(student_list)
         n_group = 0
 
-        for size, number in d_groups.items():
+        for size, number in classroom.shape_groups.items():
             for i in range(number):
                 group = Group()
                 print(f'Creating group number {n_group} with {size} members...')
