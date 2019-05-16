@@ -6,6 +6,7 @@ import numpy as np
 from pathlib import Path
 import itertools
 import json
+import operator
 
 class Student(object):
     """ The Student class describes a student in the classroom
@@ -43,11 +44,13 @@ class Group(object):
     """
 
     def __init__(self):
-
         self.students = []
 
     def __iter__(self):
         return iter(self.students)
+
+    def __len__(self):
+        return len(self.students)
 
     def add_student(self, student):
 
@@ -69,7 +72,7 @@ class Group(object):
             if student.gender == 'f':
                 n_f += 1
 
-        print(n_m, n_f)
+        # print(n_m, n_f)
 
         if 0 < n_f < n_m:
             return False
@@ -185,17 +188,50 @@ def main():
 
         session.clear()
         student_list = classroom.students.copy()
-        print(student_list)
         random.shuffle(student_list)
+        n_group = 0
 
         for size, number in d_groups.items():
             for i in range(number):
                 group = Group()
-                for j in range(size):
-                    student = student_list.pop()
-                    group.add_student(student)
+                print(f'Creating group number {n_group} with {size} members...')
+                n_group += 1
+
+                student = student_list.pop()
+                group.add_student(student)
+                student_history = classroom.dict_history[student.id_number]
+
+                possible_partners = sorted(student_history.items(), key=operator.itemgetter(1), 
+                        reverse=True)
+                possible_ids = []
+                for partner in possible_partners:
+                    for student in student_list:
+                        if partner[0] == student.id_number:
+                            possible_ids.append(partner[0])
+
+                student_ids = [student.id_number for student in student_list]
+
+                # print(f"student_list = {student_list}")
+                # print(f"possible_partners = {possible_partners}")
+
+                # print(f"student_ids = {student_ids}")
+                # print(f"possible_ids = {possible_ids}")
+
+                # print(f"{i} {number} {size} : {student.id_number} : {possible_partners}")
+                # print(f"{len(student_list)} : {student_list}")
+
+                for j in range(size-1):
+                    partner_id = possible_ids.pop()
+                    for student in student_list:
+                        if student.id_number == partner_id:
+                            group.add_student(student)
+                            break
+
                 if group.check_composition():
                     session.append(group)
+                    for student in group:
+                        if student in student_list:
+                            student_list.remove(student)
                     success = True
                 else:
                     print(f'Failed composition check')
@@ -207,14 +243,13 @@ def main():
 
                     
     for i, group in enumerate(session):
-        print(f'Group {i}:  ')
+        print(f'Group {i}: {len(group)} ')
         group.print_students()
         for student in group:
             for partner in group:
                 if partner != student:
                     classroom.dict_history[student.id_number][partner.id_number] += 1
 
-    # print(classroom.dict_history)
     classroom.store_student_history()
     return
 
