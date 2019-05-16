@@ -96,7 +96,7 @@ class Classroom(object):
         if groups is None:
             groups = self.groups
 
-        str_title = f'# Groups created on {datetime.date.today()} # \n'
+        str_title = f'# Groups created on {datetime.datetime.now()} # \n'
         str_header = f'Group '
         str_dashes = f'----- '
         roles = ('Manager', 'Scribe', 'Reporter', 'Skeptic')
