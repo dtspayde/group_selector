@@ -8,6 +8,7 @@ import itertools
 import json
 import operator
 import collections
+import datetime
 
 class Student(object):
     """ The Student class describes a student in the classroom
@@ -90,6 +91,35 @@ class Classroom(object):
         self.n_students = 0
         self.student_ids = []
         self.dict_history = {}
+        self.groups = []
+
+    def str_groups(self, groups = None):
+        if groups is None:
+            groups = self.groups
+
+        str_title = f'# Groups created on {datetime.date.today()} # \n'
+        str_header = f'Group '
+        str_dashes = f'----- '
+        roles = ('Manager', 'Scribe', 'Reporter', 'Skeptic')
+        _ = ''
+        for role in roles:
+            str_header += f'{role:18s} '
+            str_dashes += f'{_:-^18s} '
+
+        str_header += '\n'
+        str_dashes += '\n'
+
+        str_final = str_title + '\n' + str_header + str_dashes
+
+        for i, group in enumerate(groups):
+            str = f'{i:^5d} '
+            for student in group:
+                str += f'{student.first_name[0]}. {student.last_name:15s} '
+            str += '\n'
+            str_final += str
+
+        return str_final
+
 
     def add_student(self, student):
         print(f"Adding student {student} to class.")
@@ -256,9 +286,11 @@ def main():
             if not success:
                 break
 
+    classroom.groups = session
+
+    print(classroom.str_groups())
+
     for i, group in enumerate(session):
-        print(f'Group {i}: {len(group)} ')
-        group.print_students()
         for student in group:
             for partner in group:
                 if partner != student:
