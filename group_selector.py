@@ -112,7 +112,7 @@ class Classroom(object):
         str_final = str_title + '\n' + str_header + str_dashes
 
         for i, group in enumerate(groups):
-            str = f'{i:^5d} '
+            str = f'{i+1:^5d} '
             for student in group:
                 str += f'{student.first_name[0]}. {student.last_name:15s} '
             str += '\n'
