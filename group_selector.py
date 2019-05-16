@@ -135,7 +135,21 @@ class Classroom(object):
 
     def print_students(self):
         print(self.students)
-        
+
+    def histogram_partner_data(self):
+        histo = collections.Counter()
+        for sub_dicts in self.dict_history.values():
+            histo.update(sub_dicts.values())
+
+        return histo
+
+    def print_partner_data(self):
+
+        histo = self.histogram_partner_data()
+
+        for n_times in sorted(histo.keys()):
+            print(f'{n_times} = {int(histo[n_times]/2)}')
+
     def calculate_n_groups(self, n_members, n_students = None, groups = None):
 
         if groups is None:
@@ -242,7 +256,6 @@ def main():
             if not success:
                 break
 
-                    
     for i, group in enumerate(session):
         print(f'Group {i}: {len(group)} ')
         group.print_students()
@@ -251,12 +264,7 @@ def main():
                 if partner != student:
                     classroom.dict_history[student.id_number][partner.id_number] += 1
 
-    histo = collections.Counter()
-    for sub_dicts in classroom.dict_history.values():
-        histo.update(sub_dicts.values())
-
-    for n_times in sorted(histo.keys()):
-        print(f'{n_times} = {int(histo[n_times]/2)}')
+    classroom.print_partner_data()
 
     classroom.store_student_history()
     return
