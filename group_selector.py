@@ -231,6 +231,7 @@ class Classroom(object):
 
             self.calculate_n_groups(n_members - 1, n_students, groups)
 
+        self.shape_groups = groups
         return groups
 
     def form_groups(self):
@@ -305,7 +306,7 @@ def main():
 
     classroom.load_student_history()
 
-    classroom.shape_groups = classroom.calculate_n_groups(3)
+    classroom.calculate_n_groups(3)
 
     classroom.form_groups()
 
