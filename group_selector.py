@@ -162,6 +162,14 @@ class Classroom(object):
         with file.open(mode='w') as f:
             json.dump(self.dict_history, f)
 
+    def update_student_history(self):
+        for i, group in enumerate(self.groups):
+            for student in group:
+                for partner in group:
+                    if partner != student:
+                        self.dict_history[student.id_number][partner.id_number] += 1
+
+
     def store_groups(self, filename = 'groups.txt'):
         file = Path(filename)
 
@@ -297,10 +305,10 @@ def main():
     classroom = Classroom()
 
     classroom.load_students()
+
     classroom.load_student_history()
 
     classroom.shape_groups = classroom.calculate_n_groups(3)
-    print(classroom.shape_groups, sum(s*g for s, g in classroom.shape_groups.items()))
 
     classroom.form_groups()
 
@@ -308,11 +316,7 @@ def main():
 
     classroom.store_groups()
 
-    for i, group in enumerate(classroom.groups):
-        for student in group:
-            for partner in group:
-                if partner != student:
-                    classroom.dict_history[student.id_number][partner.id_number] += 1
+    classroom.update_student_history()
 
     classroom.print_partner_data()
 
