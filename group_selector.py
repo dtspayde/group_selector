@@ -118,8 +118,9 @@ class Classroom(object):
             str += '\n'
             str_final += str
 
-        return str_final
+        str_final += '\n'
 
+        return str_final
 
     def add_student(self, student):
         print(f"Adding student {student} to class.")
@@ -159,6 +160,16 @@ class Classroom(object):
         
         with file.open(mode='w') as f:
             json.dump(self.dict_history, f)
+
+    def store_groups(self, filename = 'groups.txt'):
+        file = Path(filename)
+
+        # str = ''
+        str = file.read_text() if file.exists() else ''
+            
+        str_final = self.str_groups() + str
+
+        file.write_text(str_final)
 
     def __iter__(self):
         return iter(self.students)
@@ -289,6 +300,8 @@ def main():
     classroom.groups = session
 
     print(classroom.str_groups())
+
+    classroom.store_groups()
 
     for i, group in enumerate(session):
         for student in group:
