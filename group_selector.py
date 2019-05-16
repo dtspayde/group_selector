@@ -2,9 +2,7 @@
 # coding: utf-8
 
 import random
-import numpy as np
 from pathlib import Path
-import itertools
 import json
 import operator
 import collections
@@ -169,7 +167,6 @@ class Classroom(object):
                     if partner != student:
                         self.dict_history[student.id_number][partner.id_number] += 1
 
-
     def store_groups(self, filename = 'groups.txt'):
         file = Path(filename)
 
@@ -321,6 +318,7 @@ def main():
     classroom.print_partner_data()
 
     classroom.store_student_history()
+
     return
 
 if __name__ == "__main__":
