@@ -228,6 +228,70 @@ class Classroom(object):
 
         return groups
 
+    def form_groups(self):
+
+        success = False
+        session = []
+
+        while not success:
+
+            session.clear()
+            student_list = self.students.copy()
+            random.shuffle(student_list)
+            n_group = 0
+
+            for size, number in self.shape_groups.items():
+                for i in range(number):
+                    group = Group()
+                    print(f'Creating group number {n_group} with {size} members...')
+                    n_group += 1
+
+                    student = student_list.pop()
+                    group.add_student(student)
+                    student_history = self.dict_history[student.id_number]
+
+                    possible_partners = sorted(student_history.items(), key=operator.itemgetter(1), 
+                            reverse=True)
+                    possible_ids = []
+                    for partner in possible_partners:
+                        for student in student_list:
+                            if partner[0] == student.id_number:
+                                possible_ids.append(partner[0])
+
+                    student_ids = [student.id_number for student in student_list]
+
+                    # print(f"student_list = {student_list}")
+                    # print(f"possible_partners = {possible_partners}")
+
+                    # print(f"student_ids = {student_ids}")
+                    # print(f"possible_ids = {possible_ids}")
+
+                    # print(f"{i} {number} {size} : {student.id_number} : {possible_partners}")
+                    # print(f"{len(student_list)} : {student_list}")
+
+                    for j in range(size-1):
+                        partner_id = possible_ids.pop()
+                        for student in student_list:
+                            if student.id_number == partner_id:
+                                group.add_student(student)
+                                break
+
+                    if group.check_composition():
+                        session.append(group)
+                        for student in group:
+                            if student in student_list:
+                                student_list.remove(student)
+                        success = True
+                    else:
+                        print(f'Failed composition check')
+                        group.print_students()
+                        success = False
+                        break
+                if not success:
+                    break
+
+        self.groups = session
+
 def main():
 
     classroom = Classroom()
@@ -238,73 +302,13 @@ def main():
     classroom.shape_groups = classroom.calculate_n_groups(3)
     print(classroom.shape_groups, sum(s*g for s, g in classroom.shape_groups.items()))
 
-    success = False
-    session = []
-
-    while not success:
-
-        session.clear()
-        student_list = classroom.students.copy()
-        random.shuffle(student_list)
-        n_group = 0
-
-        for size, number in classroom.shape_groups.items():
-            for i in range(number):
-                group = Group()
-                print(f'Creating group number {n_group} with {size} members...')
-                n_group += 1
-
-                student = student_list.pop()
-                group.add_student(student)
-                student_history = classroom.dict_history[student.id_number]
-
-                possible_partners = sorted(student_history.items(), key=operator.itemgetter(1), 
-                        reverse=True)
-                possible_ids = []
-                for partner in possible_partners:
-                    for student in student_list:
-                        if partner[0] == student.id_number:
-                            possible_ids.append(partner[0])
-
-                student_ids = [student.id_number for student in student_list]
-
-                # print(f"student_list = {student_list}")
-                # print(f"possible_partners = {possible_partners}")
-
-                # print(f"student_ids = {student_ids}")
-                # print(f"possible_ids = {possible_ids}")
-
-                # print(f"{i} {number} {size} : {student.id_number} : {possible_partners}")
-                # print(f"{len(student_list)} : {student_list}")
-
-                for j in range(size-1):
-                    partner_id = possible_ids.pop()
-                    for student in student_list:
-                        if student.id_number == partner_id:
-                            group.add_student(student)
-                            break
-
-                if group.check_composition():
-                    session.append(group)
-                    for student in group:
-                        if student in student_list:
-                            student_list.remove(student)
-                    success = True
-                else:
-                    print(f'Failed composition check')
-                    group.print_students()
-                    success = False
-                    break
-            if not success:
-                break
-
-    classroom.groups = session
+    classroom.form_groups()
 
     print(classroom.str_groups())
 
     classroom.store_groups()
 
-    for i, group in enumerate(session):
+    for i, group in enumerate(classroom.groups):
         for student in group:
             for partner in group:
                 if partner != student:
