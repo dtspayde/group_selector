@@ -140,10 +140,10 @@ class Classroom(object):
 
         for line in file.read_text().splitlines():
             (student_id, first_name, last_name, gender) = (
-                    item.strip() for item in line.split(','))
+                item.strip() for item in line.split(','))
             self.add_student(
-                    Student(id_number=student_id, first_name=first_name,
-                            last_name=last_name, gender=gender))
+                Student(id_number=student_id, first_name=first_name,
+                        last_name=last_name, gender=gender))
 
     def load_student_history(self, filename='students_history.txt'):
         file = Path(filename)
@@ -171,7 +171,9 @@ class Classroom(object):
             for student in group:
                 for partner in group:
                     if partner != student:
-                        self.dict_history[student.id_number][partner.id_number] += 1
+                        sid = student.id_number
+                        pid = partner.id_number
+                        self.dict_history[sid][pid] += 1
 
     def store_groups(self, filename='groups.txt'):
         file = Path(filename)
