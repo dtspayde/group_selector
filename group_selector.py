@@ -8,9 +8,10 @@ import operator
 import collections
 import datetime
 
+
 class Student(object):
     """ The Student class describes a student in the classroom
-    
+
     Attributes
     ----------
     id_number  : student's ID number
@@ -18,8 +19,8 @@ class Student(object):
     first_name : student's first name
     gender     : student's gender
     """
-    
-    def __init__(self, id_number, last_name, first_name, gender = None):
+
+    def __init__(self, id_number, last_name, first_name, gender=None):
         """ Initializes Student with appropriate default values """
 
         self.gender = gender
@@ -35,8 +36,10 @@ class Student(object):
     def __repr__(self):
 
         return (f'{self.__class__.__name__}('
-                f'{self.id_number}, {self.first_name!r}, {self.last_name!r}, {self.gender!r})'
+                f'{self.id_number}, {self.first_name!r},'
+                f'{self.last_name!r}, {self.gender!r})'
                 )
+
 
 class Group(object):
     """ The group class contains a collection of students to work together
@@ -58,7 +61,7 @@ class Group(object):
         self.students.append(student)
 
     def print_students(self):
-        
+
         print(self.students)
         # (print(student) for student in self.students)
 
@@ -79,6 +82,7 @@ class Group(object):
         else:
             return True
 
+
 class Classroom(object):
     """ Classroom is a collection of all Students that compose the class
     """
@@ -92,7 +96,7 @@ class Classroom(object):
         self.groups = []
         self.shape_groups = {}
 
-    def str_groups(self, groups = None):
+    def str_groups(self, groups=None):
         if groups is None:
             groups = self.groups
 
@@ -128,18 +132,20 @@ class Classroom(object):
         self.student_ids.append(student.id_number)
         self.n_students += 1
 
-    def load_students(self, filename = 'student_list.txt'):
+    def load_students(self, filename='student_list.txt'):
         file = Path(filename)
 
         if not file.exists():
             raise Exception(f'Student list file does not exist.')
 
         for line in file.read_text().splitlines():
-            (student_id, first_name, last_name, gender) = (item.strip() for item in line.split(','))
-            self.add_student(Student(id_number = student_id, first_name = first_name, 
-                last_name = last_name, gender = gender))
+            (student_id, first_name, last_name, gender) = (
+                    item.strip() for item in line.split(','))
+            self.add_student(
+                    Student(id_number=student_id, first_name=first_name,
+                            last_name=last_name, gender=gender))
 
-    def load_student_history(self, filename = 'students_history.txt'):
+    def load_student_history(self, filename='students_history.txt'):
         file = Path(filename)
 
         if file.exists():
@@ -154,9 +160,9 @@ class Classroom(object):
                     dict_line[partner_id] = 0
                 self.dict_history[id] = dict_line
 
-    def store_student_history(self, filename = 'students_history.txt'):
+    def store_student_history(self, filename='students_history.txt'):
         file = Path(filename)
-        
+
         with file.open(mode='w') as f:
             json.dump(self.dict_history, f)
 
@@ -167,12 +173,12 @@ class Classroom(object):
                     if partner != student:
                         self.dict_history[student.id_number][partner.id_number] += 1
 
-    def store_groups(self, filename = 'groups.txt'):
+    def store_groups(self, filename='groups.txt'):
         file = Path(filename)
 
         # str = ''
         str = file.read_text() if file.exists() else ''
-            
+
         str_final = self.str_groups() + str
 
         file.write_text(str_final)
@@ -197,7 +203,7 @@ class Classroom(object):
         for n_times in sorted(histo.keys()):
             print(f'{n_times} = {int(histo[n_times]/2)}')
 
-    def calculate_n_groups(self, n_members, n_students = None, groups = None):
+    def calculate_n_groups(self, n_members, n_students=None, groups=None):
 
         if groups is None:
             groups = {}
@@ -249,31 +255,21 @@ class Classroom(object):
             for size, number in self.shape_groups.items():
                 for i in range(number):
                     group = Group()
-                    print(f'Creating group number {n_group} with {size} members...')
+                    print(f'Creating group {n_group} with {size} members...')
                     n_group += 1
 
                     student = student_list.pop()
                     group.add_student(student)
                     student_history = self.dict_history[student.id_number]
 
-                    possible_partners = sorted(student_history.items(), key=operator.itemgetter(1), 
-                            reverse=True)
+                    possible_partners = sorted(student_history.items(),
+                                               key=operator.itemgetter(1),
+                                               reverse=True)
                     possible_ids = []
                     for partner in possible_partners:
                         for student in student_list:
                             if partner[0] == student.id_number:
                                 possible_ids.append(partner[0])
-
-                    student_ids = [student.id_number for student in student_list]
-
-                    # print(f"student_list = {student_list}")
-                    # print(f"possible_partners = {possible_partners}")
-
-                    # print(f"student_ids = {student_ids}")
-                    # print(f"possible_ids = {possible_ids}")
-
-                    # print(f"{i} {number} {size} : {student.id_number} : {possible_partners}")
-                    # print(f"{len(student_list)} : {student_list}")
 
                     for j in range(size-1):
                         partner_id = possible_ids.pop()
@@ -297,6 +293,7 @@ class Classroom(object):
                     break
 
         self.groups = session
+
 
 def main():
 
@@ -322,6 +319,6 @@ def main():
 
     return
 
+
 if __name__ == "__main__":
     main()
-
