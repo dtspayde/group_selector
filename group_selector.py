@@ -8,6 +8,8 @@ import operator
 import collections
 import datetime
 
+import click
+
 
 class Student(object):
     """ The Student class describes a student in the classroom
@@ -297,11 +299,19 @@ class Classroom(object):
         self.groups = session
 
 
-def main():
+@click.command()
+@click.option('--n_members', '-n', default=3, show_default=True)
+@click.option('--f_group', '-g', default='groups.txt', show_default=True,
+              type=click.Path(exists=True, readable=True))
+@click.argument('f_students', type=click.Path(exists=True, readable=True))
+def main(n_members, f_group, f_students):
+    """ This program will generate a set of student groups from a class 
+    roster F_STUDENTS.
+    """
 
     classroom = Classroom()
 
-    classroom.load_students()
+    classroom.load_students(filename=f_students)
 
     classroom.load_student_history()
 
@@ -311,7 +321,7 @@ def main():
 
     print(classroom.str_groups())
 
-    classroom.store_groups()
+    classroom.store_groups(filename=f_group)
 
     classroom.update_student_history()
 
