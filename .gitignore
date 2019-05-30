@@ -1,4 +1,5 @@
 *.txt
 .venv
+virtualenv
 __pycache__
 *.egg-info
