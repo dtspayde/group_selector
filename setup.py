@@ -5,7 +5,7 @@ setup(
         version='0.1',
         py_modules=['group_selector'],
         install_requires=[
-            'Click'
+            'Click>=7.0'
             ],
         entry_points='''
             [console_scripts]
