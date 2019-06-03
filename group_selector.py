@@ -304,7 +304,7 @@ class Classroom(object):
 @click.option('--f_group', '-g', default='groups.txt', show_default=True,
               type=click.Path(exists=True, readable=True))
 @click.argument('f_students', type=click.Path(exists=True, readable=True))
-def main(n_members, f_group, f_students):
+def cli(n_members, f_group, f_students):
     """ This program will generate a set of student groups from a class 
     roster F_STUDENTS.
     """
@@ -333,4 +333,4 @@ def main(n_members, f_group, f_students):
 
 
 if __name__ == "__main__":
-    main()
+    cli()

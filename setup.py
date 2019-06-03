@@ -9,6 +9,6 @@ setup(
             ],
         entry_points='''
             [console_scripts]
-            group_selector=group_selector:main
+            group_selector=group_selector:cli
         ''',
 )
