@@ -7,8 +7,17 @@ import json
 import operator
 import collections
 import datetime
+import logging
 
 import click
+
+logger = logging.getLogger()
+handler = logging.StreamHandler()
+formatter = logging.Formatter(
+        '%(asctime)s %(name)-6s %(levelname)-8s %(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
+logger.setLevel(logging.INFO)
 
 
 class Student(object):
@@ -59,7 +68,7 @@ class Group(object):
 
     def add_student(self, student):
 
-        print("Adding student", student)
+        logger.debug("Adding student %s", student)
         self.students.append(student)
 
     def print_students(self):
@@ -128,7 +137,7 @@ class Classroom(object):
         return str_final
 
     def add_student(self, student):
-        print(f"Adding student {student} to class.")
+        logger.info(f"Adding student {student} to class.")
         # student.id_number = self.n_students
         self.students.append(student)
         self.student_ids.append(student.id_number)
@@ -205,7 +214,7 @@ class Classroom(object):
         histo = self.histogram_partner_data()
 
         for n_times in sorted(histo.keys()):
-            print(f'{n_times} = {int(histo[n_times]/2)}')
+            logger.debug(f'{n_times} = {int(histo[n_times]/2)}')
 
     def calculate_n_groups(self, n_members, n_students=None, groups=None):
 
@@ -259,7 +268,8 @@ class Classroom(object):
             for size, number in self.shape_groups.items():
                 for i in range(number):
                     group = Group()
-                    print(f'Creating group {n_group} with {size} members...')
+                    logger.info(
+                            f'Creating group {n_group} with {size} members...')
                     n_group += 1
 
                     student = student_list.pop()
@@ -289,8 +299,7 @@ class Classroom(object):
                                 student_list.remove(student)
                         success = True
                     else:
-                        print(f'Failed composition check')
-                        group.print_students()
+                        logger.info(f'Failed composition check')
                         success = False
                         break
                 if not success:
@@ -305,8 +314,7 @@ class Classroom(object):
               type=click.Path(exists=True, readable=True))
 @click.argument('f_students', type=click.Path(exists=True, readable=True))
 def cli(n_members, f_group, f_students):
-    """ This program will generate a set of student groups from a class 
-    roster F_STUDENTS.
+    """ This program will generate a set of groups from a class roster F_STUDENTS.
     """
 
     classroom = Classroom()
@@ -319,6 +327,9 @@ def cli(n_members, f_group, f_students):
 
     classroom.form_groups()
 
+    print("")
+    print("Here's the next set of groups")
+    print("")
     print(classroom.str_groups())
 
     classroom.store_groups(filename=f_group)
