@@ -32,7 +32,6 @@ class Student(object):
     """
 
     def __init__(self, id_number, last_name, first_name, gender=None):
-        """ Initializes Student with appropriate default values """
 
         self.gender = gender
         if self.gender is not None:
@@ -54,7 +53,6 @@ class Student(object):
 
 class Group(object):
     """ The group class contains a collection of students to work together
-
     """
 
     def __init__(self):
@@ -74,9 +72,12 @@ class Group(object):
     def print_students(self):
 
         print(self.students)
-        # (print(student) for student in self.students)
 
     def check_composition(self):
+        """ This function checks to make sure that the group does not contain
+        more male than female students.
+        """
+
         n_m = 0
         n_f = 0
 
@@ -108,6 +109,10 @@ class Classroom(object):
         self.shape_groups = {}
 
     def str_groups(self, groups=None):
+        """ This function returns a string with the groups in Markdown
+        format.
+        """
+
         if groups is None:
             groups = self.groups
 
@@ -138,7 +143,6 @@ class Classroom(object):
 
     def add_student(self, student):
         logger.info(f"Adding student {student} to class.")
-        # student.id_number = self.n_students
         self.students.append(student)
         self.student_ids.append(student.id_number)
         self.n_students += 1
@@ -157,6 +161,11 @@ class Classroom(object):
                         last_name=last_name, gender=gender))
 
     def load_student_history(self, filename='students_history.txt'):
+        """ The student history file records group history information in a
+        machine-readable format.  This is used to minimize the number of
+        repeat pairings.
+        """
+
         file = Path(filename)
 
         if file.exists():
@@ -210,6 +219,9 @@ class Classroom(object):
         return histo
 
     def print_partner_data(self):
+        """ This function is used to print the number of repeat pairings and
+        the count.
+        """
 
         histo = self.histogram_partner_data()
 
@@ -217,6 +229,11 @@ class Classroom(object):
             logger.debug(f'{n_times} = {int(histo[n_times]/2)}')
 
     def calculate_n_groups(self, n_members, n_students=None, groups=None):
+        """
+        Given a number of students in the class and a number of desired
+        members, this function determines the number of groups and how many
+        members in each group.
+        """
 
         if groups is None:
             groups = {}
@@ -315,6 +332,15 @@ class Classroom(object):
 @click.argument('f_students', type=click.Path(exists=True, readable=True))
 def cli(n_members, f_group, f_students):
     """ This program will generate a set of groups from a class roster F_STUDENTS.
+
+    The file F_STUDENTS should be comma separated.  Each line is one student
+    with the following fields:  student ID number, first name, second name, and
+    gender (f or m).  No comments or comment lines are allowed.
+
+    The script will spread partners around before repeating; it is not truly
+    random.  It will not allow groups with more male than female members to be
+    formed.  This is a brute force process - all groups will be thrown out if
+    one gets formed with the wrong balance.
     """
 
     classroom = Classroom()
