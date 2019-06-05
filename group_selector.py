@@ -87,12 +87,7 @@ class Group(object):
             if student.gender == 'f':
                 n_f += 1
 
-        # print(n_m, n_f)
-
-        if 0 < n_f < n_m:
-            return False
-        else:
-            return True
+        return not (0 < n_f < n_m)
 
 
 class Classroom(object):
