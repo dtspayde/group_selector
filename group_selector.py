@@ -323,9 +323,11 @@ class Classroom(object):
 @click.command()
 @click.option('--n_members', '-n', default=3, show_default=True)
 @click.option('--f_group', '-g', default='groups.txt', show_default=True,
-              type=click.Path(exists=True, readable=True))
+              type=click.Path(exists=False, readable=True))
+@click.option('--f_history', '-g', default='history.txt', show_default=True,
+              type=click.Path(exists=False, readable=True))
 @click.argument('f_students', type=click.Path(exists=True, readable=True))
-def cli(n_members, f_group, f_students):
+def cli(n_members, f_group, f_history, f_students):
     """ This program will generate a set of groups from a class roster F_STUDENTS.
 
     The file F_STUDENTS should be comma separated.  Each line is one student
@@ -342,7 +344,7 @@ def cli(n_members, f_group, f_students):
 
     classroom.load_students(filename=f_students)
 
-    classroom.load_student_history()
+    classroom.load_student_history(filename=f_history)
 
     classroom.calculate_n_groups(3)
 
@@ -359,7 +361,7 @@ def cli(n_members, f_group, f_students):
 
     classroom.print_partner_data()
 
-    classroom.store_student_history()
+    classroom.store_student_history(filename=f_history)
 
     return
 
