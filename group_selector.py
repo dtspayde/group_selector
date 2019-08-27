@@ -346,7 +346,7 @@ def cli(n_members, f_group, f_history, f_students):
 
     classroom.load_student_history(filename=f_history)
 
-    classroom.calculate_n_groups(3)
+    classroom.calculate_n_groups(n_members)
 
     classroom.form_groups()
 
