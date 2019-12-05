@@ -14,10 +14,31 @@ import click
 logger = logging.getLogger()
 handler = logging.StreamHandler()
 formatter = logging.Formatter(
-        '%(asctime)s %(name)-6s %(levelname)-8s %(message)s')
+    '%(asctime)s %(name)-6s %(levelname)-8s %(message)s')
 handler.setFormatter(formatter)
 logger.addHandler(handler)
-logger.setLevel(logging.INFO)
+# logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
+
+
+def history_by_frequency(history):
+    print(max(history.values()))
+
+    dict_freq = collections.OrderedDict.fromkeys(
+        range(0, max(history.values())+1))
+
+    for k in dict_freq.keys():
+        dict_freq[k] = []
+
+    for k, v in history.items():
+        if dict_freq[v] is None:
+            dict_freq[v] = [k]
+        else:
+            dict_freq[v].append(k)
+
+    logger.debug(dict_freq)
+
+    return dict_freq
 
 
 class Student(object):
@@ -292,7 +313,7 @@ class Classroom(object):
                 for i in range(number):
                     group = Group()
                     logger.info(
-                            f'Creating group {n_group} with {size} members...')
+                        f'Creating group {n_group} with {size} members...')
                     n_group += 1
 
                     student = student_list.pop()
@@ -358,6 +379,9 @@ def cli(n_members, f_group, f_history, f_students):
     classroom.load_student_history(filename=f_history)
 
     classroom.print_students()
+
+    for student in classroom.students:
+        history_by_frequency(student.history)
 
     exit()
 
