@@ -17,18 +17,16 @@ formatter = logging.Formatter(
     '%(asctime)s %(name)-6s %(levelname)-8s %(message)s')
 handler.setFormatter(formatter)
 logger.addHandler(handler)
-# logger.setLevel(logging.INFO)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
+# logger.setLevel(logging.DEBUG)
 
 
 def history_by_frequency(history):
-    print(max(history.values()))
+    n_times = list(history.values())
+    n_times.sort()
+    n_unique = set(n_times)
 
-    dict_freq = collections.OrderedDict.fromkeys(
-        range(0, max(history.values())+1))
-
-    for k in dict_freq.keys():
-        dict_freq[k] = []
+    dict_freq = collections.OrderedDict.fromkeys(n_unique)
 
     for k, v in history.items():
         if dict_freq[v] is None:
@@ -214,12 +212,14 @@ class Classroom(object):
             json.dump(self.dict_history, f)
 
     def update_student_history(self):
+        logger.debug(f'dict_history = {self.dict_history}')
         for i, group in enumerate(self.groups):
             for student in group:
                 for partner in group:
                     if partner != student:
                         sid = student.id_number
                         pid = partner.id_number
+                        logger.debug(f'sid = {sid} and pid = {pid}')
                         self.dict_history[sid][pid] += 1
 
     def store_groups(self, filename='groups.txt'):
@@ -252,8 +252,9 @@ class Classroom(object):
 
         histo = self.histogram_partner_data()
 
+        logger.info(f'Histogram of Pairing Frequency')
         for n_times in sorted(histo.keys()):
-            logger.debug(f'{n_times} = {int(histo[n_times]/2)}')
+            logger.info(f'{n_times} = {int(histo[n_times]/2)}')
 
     def calculate_n_groups(self, n_members, n_students=None, groups=None):
         """
@@ -297,6 +298,39 @@ class Classroom(object):
         self.shape_groups = groups
         return groups
 
+    def add_group_member(self, group, student_list, n_members, group_history=None):
+
+        if n_members == 0:
+            return group
+
+        student = None
+
+        if not group:
+            random.shuffle(student_list)
+            student = student_list.pop()
+            group_history = student.history.copy()
+        else:
+            freq_history = history_by_frequency(group_history)
+            n_times, possible_student_ids = freq_history.popitem(last=False)
+            random.shuffle(possible_student_ids)
+            student_id = possible_student_ids.pop()
+            for student in student_list:
+                if student.id_number == student_id:
+                    break
+            student_list.remove(student)
+            group_history.pop(student_id)
+            logger.debug(f'Chosen partner is {student}.')
+            for id_number, n_times in student.history.items():
+                if id_number in group_history.keys():
+                    group_history[id_number] += n_times
+
+        group.add_student(student)
+        n_members -= 1
+
+        self.add_group_member(group, student_list, n_members, group_history)
+
+        return group
+
     def form_groups(self):
 
         success = False
@@ -314,27 +348,10 @@ class Classroom(object):
                     group = Group()
                     logger.info(
                         f'Creating group {n_group} with {size} members...')
+
+                    self.add_group_member(group, student_list, size)
+
                     n_group += 1
-
-                    student = student_list.pop()
-                    group.add_student(student)
-                    student_history = self.dict_history[student.id_number]
-
-                    possible_partners = sorted(student_history.items(),
-                                               key=operator.itemgetter(1),
-                                               reverse=True)
-                    possible_ids = []
-                    for partner in possible_partners:
-                        for student in student_list:
-                            if partner[0] == student.id_number:
-                                possible_ids.append(partner[0])
-
-                    for j in range(size-1):
-                        partner_id = possible_ids.pop()
-                        for student in student_list:
-                            if student.id_number == partner_id:
-                                group.add_student(student)
-                                break
 
                     if group.check_composition():
                         session.append(group)
@@ -378,12 +395,7 @@ def cli(n_members, f_group, f_history, f_students):
 
     classroom.load_student_history(filename=f_history)
 
-    classroom.print_students()
-
-    for student in classroom.students:
-        history_by_frequency(student.history)
-
-    exit()
+    # classroom.print_students()
 
     classroom.calculate_n_groups(n_members)
 
