@@ -29,9 +29,11 @@ class Student(object):
     last_name  : student's last name
     first_name : student's first name
     gender     : student's gender
+    history    : student's history of working with other students
     """
 
-    def __init__(self, id_number, last_name, first_name, gender=None):
+    def __init__(self, id_number, last_name, first_name,
+                 gender=None, history=None):
 
         self.gender = gender
         if self.gender is not None:
@@ -42,12 +44,18 @@ class Student(object):
         self.last_name = last_name
         self.first_name = first_name
         self.id_number = id_number
+        if history is None:
+            self.history = {}
+        else:
+            self.history = history
 
     def __repr__(self):
 
         return (f'{self.__class__.__name__}('
                 f'{self.id_number}, {self.first_name!r},'
-                f'{self.last_name!r}, {self.gender!r})'
+                f'{self.last_name!r}, {self.gender!r}, '
+                f'{self.history}'
+                f')'
                 )
 
 
@@ -174,6 +182,9 @@ class Classroom(object):
                         continue
                     dict_line[partner_id] = 0
                 self.dict_history[id] = dict_line
+
+        for student in self.students:
+            student.history = self.dict_history[student.id_number]
 
     def store_student_history(self, filename='students_history.txt'):
         file = Path(filename)
@@ -345,6 +356,10 @@ def cli(n_members, f_group, f_history, f_students):
     classroom.load_students(filename=f_students)
 
     classroom.load_student_history(filename=f_history)
+
+    classroom.print_students()
+
+    exit()
 
     classroom.calculate_n_groups(n_members)
 
