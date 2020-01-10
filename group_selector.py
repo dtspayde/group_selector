@@ -208,9 +208,10 @@ class Classroom(object):
     def store_student_history(self, filename='students_history.txt'):
         file = Path(filename)
 
-        str_file = '.' + file.name
-        logger.info(f"Copying {file} to {str_file}...")
-        file.rename(Path(str_file))
+        if file.exists():
+            file_backup = Path('.' + file.name)
+            logger.info(f"Copying {file} to {file_backup}...")
+            file.rename(file_backup)
 
         with file.open(mode='w') as f:
             json.dump(self.dict_history, f)
@@ -232,9 +233,10 @@ class Classroom(object):
         # str = ''
         str = file.read_text() if file.exists() else ''
 
-        str_file = '.' + file.name
-        logger.info(f"Copying {file} to {str_file}...")
-        file.rename(Path(str_file))
+        if file.exists():
+            file_backup = Path('.' + file.name)
+            logger.info(f"Copying {file} to {file_backup}...")
+            file.rename(file_backup)
 
         str_final = self.str_groups() + str
 
