@@ -228,6 +228,10 @@ class Classroom(object):
         # str = ''
         str = file.read_text() if file.exists() else ''
 
+        str_file = '.' + file.name
+        logger.info(f"Copying {file} to {str_file}...")
+        file.rename(Path(str_file))
+
         str_final = self.str_groups() + str
 
         file.write_text(str_final)
