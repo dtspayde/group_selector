@@ -208,6 +208,10 @@ class Classroom(object):
     def store_student_history(self, filename='students_history.txt'):
         file = Path(filename)
 
+        str_file = '.' + file.name
+        logger.info(f"Copying {file} to {str_file}...")
+        file.rename(Path(str_file))
+
         with file.open(mode='w') as f:
             json.dump(self.dict_history, f)
 
