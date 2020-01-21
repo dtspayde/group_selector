@@ -155,7 +155,9 @@ class Classroom(object):
         for i, group in enumerate(groups):
             str = f'{i+1:^5d} '
             for student in group:
-                str += f'{student.first_name[0]}. {student.last_name:15s} '
+                # str += f'{student.first_name[0]}. {student.last_name:15s} '
+                name = f'{student.first_name} {student.last_name[0]}.'
+                str += f'{name:18s} '
             str += '\n'
             str_final += str
 
