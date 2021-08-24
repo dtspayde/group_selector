@@ -385,7 +385,7 @@ class Classroom(object):
 @click.option('--n_members', '-n', default=3, show_default=True)
 @click.option('--f_group', '-g', default='groups.txt', show_default=True,
               type=click.Path(exists=False, readable=True))
-@click.option('--f_history', '-g', default='history.txt', show_default=True,
+@click.option('--f_history', '-h', default='history.txt', show_default=True,
               type=click.Path(exists=False, readable=True))
 @click.argument('f_students', type=click.Path(exists=True, readable=True))
 def cli(n_members, f_group, f_history, f_students):
