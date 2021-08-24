@@ -8,3 +8,5 @@ build/
 !README.md
 *.pdf
 venv
+*.csv
+dist
