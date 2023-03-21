@@ -145,5 +145,8 @@ messages_control.disable = [
   "wrong-import-position",
 ]
 
+[tool.pylint.refactoring]
+max-nested-blocks = 6
+
 [tool.codespell]
 ignore-words-list = "damon"
