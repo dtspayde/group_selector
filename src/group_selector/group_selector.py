@@ -54,7 +54,8 @@ class Student:
         if self.gender is not None:
             self.gender = self.gender[0].lower()
             if self.gender != "m" and self.gender != "f":
-                raise ValueError("Please provide gender as 'm' or 'f'.")
+                msg = "Please provide gender as 'm' or 'f'."
+                raise ValueError(msg)
 
         self.last_name = last_name
         self.first_name = first_name
@@ -155,7 +156,7 @@ class Classroom:
         return str_final
 
     def add_student(self, student):
-        logger.info(f"Adding student {student} to class.")
+        logger.info("Adding student %s student} to class.", student)
         self.students.append(student)
         self.student_ids.append(student.id_number)
         self.n_students += 1
@@ -164,7 +165,8 @@ class Classroom:
         file = Path(filename)
 
         if not file.exists():
-            raise Exception("Student list file does not exist.")
+            msg = "Student list file does not exist."
+            raise Exception(msg)
 
         for line in file.read_text().splitlines():
             (student_id, first_name, last_name, gender) = (
@@ -209,14 +211,14 @@ class Classroom:
             json.dump(self.dict_history, f)
 
     def update_student_history(self):
-        logger.debug(f"dict_history = {self.dict_history}")
+        logger.debug("dict_history = %s", self.dict_history)
         for _i, group in enumerate(self.groups):
             for student in group:
                 for partner in group:
                     if partner != student:
                         sid = student.id_number
                         pid = partner.id_number
-                        logger.debug(f"sid = {sid} and pid = {pid}")
+                        logger.debug("sid = %s and pid = %s", sid, pid)
                         self.dict_history[sid][pid] += 1
 
     def store_groups(self, filename="groups.txt"):
@@ -251,7 +253,7 @@ class Classroom:
 
         logger.info("Histogram of Pairing Frequency")
         for n_times in sorted(histo.keys()):
-            logger.info(f"{n_times} = {int(histo[n_times]/2)}")
+            logger.info("%s = %s", n_times, int(histo[n_times] / 2))
 
     def calculate_n_groups(self, n_members, n_students=None, groups=None):
         """
@@ -315,7 +317,7 @@ class Classroom:
                     break
             student_list.remove(student)
             group_history.pop(student_id)
-            logger.debug(f"Chosen partner is {student}.")
+            logger.debug("Chosen partner is %s.", student)
             for id_number, n_times in student.history.items():
                 if id_number in group_history:
                     group_history[id_number] += n_times
@@ -340,7 +342,7 @@ class Classroom:
             for size, number in self.shape_groups.items():
                 for _i in range(number):
                     group = Group()
-                    logger.info(f"Creating group {n_group} with {size} members...")
+                    logger.info("Creating group %s with %s members...", n_group, size)
 
                     self.add_group_member(group, student_list, size)
 
