@@ -20,17 +20,18 @@ logger.setLevel(logging.INFO)
 
 
 def history_by_frequency(history):
+    """Returns dict of frequency histogram"""
     n_times = list(history.values())
     n_times.sort()
     n_unique = set(n_times)
 
     dict_freq = collections.OrderedDict.fromkeys(n_unique)
 
-    for k, v in history.items():
-        if dict_freq[v] is None:
-            dict_freq[v] = [k]
+    for key, value in history.items():
+        if dict_freq[value] is None:
+            dict_freq[value] = [key]
         else:
-            dict_freq[v].append(k)
+            dict_freq[value].append(key)
 
     logger.debug(dict_freq)
 
@@ -53,7 +54,7 @@ class Student:
         self.gender = gender
         if self.gender is not None:
             self.gender = self.gender[0].lower()
-            if self.gender != "m" and self.gender != "f":
+            if self.gender not in ("m", "f"):
                 msg = "Please provide gender as 'm' or 'f'."
                 raise ValueError(msg)
 
@@ -88,10 +89,14 @@ class Group:
         return len(self.students)
 
     def add_student(self, student):
+        """Takes a student record and adds it to the group"""
+
         logger.debug("Adding student %s", student)
         self.students.append(student)
 
     def print_students(self):
+        """Prints the list of students associated with this group"""
+
         print(self.students)
 
     def check_composition(self):
@@ -108,7 +113,7 @@ class Group:
             if student.gender == "f":
                 n_f += 1
 
-        return not (0 < n_f < n_m)
+        return not 0 < n_f < n_m
 
 
 class Classroom:
@@ -145,30 +150,34 @@ class Classroom:
         str_final = str_title + "\n" + str_header + str_dashes
 
         for i, group in enumerate(groups):
-            str = f"{i+1:^5d} "
+            str_ini = f"{i+1:^5d} "
             for student in group:
-                str += f"{student.first_name[0]}. {student.last_name:15s} "
-            str += "\n"
-            str_final += str
+                str_ini += f"{student.first_name[0]}. {student.last_name:15s} "
+            str_ini += "\n"
+            str_final += str_ini
 
         str_final += "\n"
 
         return str_final
 
     def add_student(self, student):
+        """Add a student record to the class"""
+
         logger.info("Adding student %s student} to class.", student)
         self.students.append(student)
         self.student_ids.append(student.id_number)
         self.n_students += 1
 
     def load_students(self, filename="student_list.txt"):
+        """Load the student list from a file"""
+
         file = Path(filename)
 
         if not file.exists():
             msg = "Student list file does not exist."
-            raise Exception(msg)
+            raise FileNotFoundError(msg)
 
-        for line in file.read_text().splitlines():
+        for line in file.read_text(encoding="utf-8").splitlines():
             (student_id, first_name, last_name, gender) = (
                 item.strip() for item in line.split(",")
             )
@@ -190,27 +199,29 @@ class Classroom:
         file = Path(filename)
 
         if file.exists():
-            with file.open(mode="r") as f:
-                self.dict_history = json.load(f)
+            with file.open(mode="r", encoding="utf-8") as file_history:
+                self.dict_history = json.load(file_history)
         else:
-            for id in self.student_ids:
+            for sid in self.student_ids:
                 dict_line = {}
                 for partner_id in self.student_ids:
-                    if partner_id == id:
+                    if partner_id == sid:
                         continue
                     dict_line[partner_id] = 0
-                self.dict_history[id] = dict_line
+                self.dict_history[sid] = dict_line
 
         for student in self.students:
             student.history = self.dict_history[student.id_number]
 
     def store_student_history(self, filename="students_history.txt"):
+        """Write the updated student history data to a file"""
         file = Path(filename)
 
-        with file.open(mode="w") as f:
-            json.dump(self.dict_history, f)
+        with file.open(mode="w", encoding="utf-8") as file_history:
+            json.dump(self.dict_history, file_history)
 
     def update_student_history(self):
+        """Update the student history dict with current group info"""
         logger.debug("dict_history = %s", self.dict_history)
         for _i, group in enumerate(self.groups):
             for student in group:
@@ -222,22 +233,27 @@ class Classroom:
                         self.dict_history[sid][pid] += 1
 
     def store_groups(self, filename="groups.txt"):
+        """Write the new groups to a file"""
         file = Path(filename)
 
         # str = ''
-        str = file.read_text() if file.exists() else ""
+        str_ini = file.read_text(encoding="utf-8") if file.exists() else ""
 
-        str_final = self.str_groups() + str
+        str_final = self.str_groups() + str_ini
 
-        file.write_text(str_final)
+        file.write_text(str_final, encoding="utf-8")
 
     def __iter__(self):
         return iter(self.students)
 
     def print_students(self):
+        """Print the student list"""
+
         print(self.students)
 
     def histogram_partner_data(self):
+        """Update the partner histograms"""
+
         histo = collections.Counter()
         for sub_dicts in self.dict_history.values():
             histo.update(sub_dicts.values())
@@ -298,6 +314,8 @@ class Classroom:
         return groups
 
     def add_group_member(self, group, student_list, n_members, group_history=None):
+        """Add a student to a group"""
+
         if n_members == 0:
             return group
 
@@ -330,6 +348,8 @@ class Classroom:
         return group
 
     def form_groups(self):
+        """Runner to ensure successful generation of a set of groups"""
+
         success = False
         session = []
 
@@ -381,7 +401,7 @@ class Classroom:
     type=click.Path(exists=False, readable=True),
 )
 @click.argument("f_students", type=click.Path(exists=True, readable=True))
-def cli(n_members, f_group, f_history, f_students):
+def cli(n_members=None, f_group=None, f_history=None, f_students=None):
     """This program will generate a set of groups from a class roster F_STUDENTS.
 
     The file F_STUDENTS should be comma separated.  Each line is one student
@@ -418,8 +438,6 @@ def cli(n_members, f_group, f_history, f_students):
     classroom.print_partner_data()
 
     classroom.store_student_history(filename=f_history)
-
-    return
 
 
 if __name__ == "__main__":
