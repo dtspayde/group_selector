@@ -104,7 +104,7 @@ select = [
   "RET",         # flake8-return
   "RUF",         # Ruff-specific
   "SIM",         # flake8-simplify
-  "T20",         # flake8-print
+  # "T20",         # flake8-print
   "UP",          # pyupgrade
   "YTT",         # flake8-2020
   "EXE",         # flake8-executable
@@ -144,3 +144,6 @@ messages_control.disable = [
   "missing-module-docstring",
   "wrong-import-position",
 ]
+
+[tool.codespell]
+ignore-words-list = "damon"
