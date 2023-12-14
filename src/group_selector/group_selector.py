@@ -152,7 +152,7 @@ class Classroom:
         for i, group in enumerate(groups):
             str_ini = f"{i+1:^5d} "
             for student in group:
-                str_ini += f"{student.first_name[0]}. {student.last_name:15s} "
+                str_ini += f"{student.last_name:15s} {student.first_name[0]}. "
             str_ini += "\n"
             str_final += str_ini
 
@@ -395,7 +395,7 @@ class Classroom:
 )
 @click.option(
     "--f_history",
-    "-g",
+    "-s",
     default="history.txt",
     show_default=True,
     type=click.Path(exists=False, readable=True),
