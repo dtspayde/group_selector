@@ -178,8 +178,9 @@ class Classroom(object):
             raise Exception(f'Student list file does not exist.')
 
         for line in file.read_text().splitlines():
-            (student_id, first_name, last_name, gender) = (
+            (student_id, last_name, first_name, gender) = (
                 item.strip() for item in line.split(','))
+            first_name = first_name.split(' ')[0]
             self.add_student(
                 Student(id_number=student_id, first_name=first_name,
                         last_name=last_name, gender=gender))
