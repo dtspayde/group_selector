@@ -152,9 +152,12 @@ class Classroom:
         for i, group in enumerate(groups):
             str_ini = f"{i+1:^5d} "
             for student in group:
-                str_ini += f"{student.last_name:15s} {student.first_name[0]}. "
-            str_ini += "\n"
-            str_final += str_ini
+                # str += f'{student.first_name[0]}.
+                # {student.last_name:15s} '
+                name = f'{student.first_name:15s} {student.last_name[0]}.'
+                str += f'{name:18s} '
+            str += '\n'
+            str_final += str
 
         str_final += "\n"
 
@@ -177,10 +180,10 @@ class Classroom:
             msg = "Student list file does not exist."
             raise FileNotFoundError(msg)
 
-        for line in file.read_text(encoding="utf-8").splitlines():
-            (student_id, first_name, last_name, gender) = (
-                item.strip() for item in line.split(",")
-            )
+        for line in file.read_text().splitlines():
+            (student_id, last_name, first_name, gender) = (
+                item.strip() for item in line.split(','))
+            first_name = first_name.split(' ')[0]
             self.add_student(
                 Student(
                     id_number=student_id,
@@ -217,8 +220,13 @@ class Classroom:
         """Write the updated student history data to a file"""
         file = Path(filename)
 
-        with file.open(mode="w", encoding="utf-8") as file_history:
-            json.dump(self.dict_history, file_history)
+        if file.exists():
+            file_backup = Path('.' + file.name)
+            logger.info(f"Copying {file} to {file_backup}...")
+            file.rename(file_backup)
+
+        with file.open(mode='w') as f:
+            json.dump(self.dict_history, f)
 
     def update_student_history(self):
         """Update the student history dict with current group info"""
@@ -239,7 +247,12 @@ class Classroom:
         # str = ''
         str_ini = file.read_text(encoding="utf-8") if file.exists() else ""
 
-        str_final = self.str_groups() + str_ini
+        if file.exists():
+            file_backup = Path('.' + file.name)
+            logger.info(f"Copying {file} to {file_backup}...")
+            file.rename(file_backup)
+
+        str_final = self.str_groups() + str
 
         file.write_text(str_final, encoding="utf-8")
 
