@@ -151,13 +151,14 @@ class Classroom:
 
         for i, group in enumerate(groups):
             str_ini = f"{i+1:^5d} "
+            str_print = str_ini
             for student in group:
                 # str += f'{student.first_name[0]}.
                 # {student.last_name:15s} '
-                name = f'{student.first_name:15s} {student.last_name[0]}.'
-                str += f'{name:18s} '
-            str += '\n'
-            str_final += str
+                name = f"{student.first_name} {student.last_name}"
+                str_print += f"{name:18s} "
+            str_print += "\n"
+            str_final += str_print
 
         str_final += "\n"
 
@@ -180,10 +181,11 @@ class Classroom:
             msg = "Student list file does not exist."
             raise FileNotFoundError(msg)
 
-        for line in file.read_text().splitlines():
+        for line in file.read_text(encoding="utf-8").splitlines():
             (student_id, last_name, first_name, gender) = (
-                item.strip() for item in line.split(','))
-            first_name = first_name.split(' ')[0]
+                item.strip() for item in line.split(",")
+            )
+            first_name = first_name.split(" ")[0]
             self.add_student(
                 Student(
                     id_number=student_id,
@@ -221,11 +223,11 @@ class Classroom:
         file = Path(filename)
 
         if file.exists():
-            file_backup = Path('.' + file.name)
-            logger.info(f"Copying {file} to {file_backup}...")
+            file_backup = Path("." + file.name)
+            logger.info("Copying %s to %s...", file, file_backup)
             file.rename(file_backup)
 
-        with file.open(mode='w') as f:
+        with file.open(mode="w", encoding="utf-8") as f:
             json.dump(self.dict_history, f)
 
     def update_student_history(self):
@@ -248,11 +250,11 @@ class Classroom:
         str_ini = file.read_text(encoding="utf-8") if file.exists() else ""
 
         if file.exists():
-            file_backup = Path('.' + file.name)
-            logger.info(f"Copying {file} to {file_backup}...")
+            file_backup = Path("." + file.name)
+            logger.info("Copying %s to %s...", file, file_backup)
             file.rename(file_backup)
 
-        str_final = self.str_groups() + str
+        str_final = self.str_groups() + str_ini
 
         file.write_text(str_final, encoding="utf-8")
 

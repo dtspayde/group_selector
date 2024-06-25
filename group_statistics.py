@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
-# coding: utf-8
+from __future__ import annotations
 
-from pathlib import Path
-from collections import Counter, OrderedDict
 import json
+from collections import Counter, OrderedDict
+from pathlib import Path
 
 
 def cli():
     file = Path("2019s1_phys235_history.txt")
-    with file.open(mode='r') as f:
+    with file.open(mode="r") as f:
         dict_history = json.load(f)
     i = 0
     for k, v in dict_history.items():
@@ -25,7 +25,7 @@ def cli():
 
     cnt_ordered = OrderedDict(sorted(cnt.items(), key=lambda x: x[0]))
 
-    {print(k, v/2) for k, v in cnt_ordered.items()}
+    {print(k, v / 2) for k, v in cnt_ordered.items()}
 
     for k, v in dict_history.items():
         for k_sub, v_sub in v.items():
