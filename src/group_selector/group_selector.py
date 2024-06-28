@@ -16,8 +16,8 @@ handler = logging.StreamHandler()
 formatter = logging.Formatter("%(asctime)s %(name)-6s %(levelname)-8s %(message)s")
 handler.setFormatter(formatter)
 logger.addHandler(handler)
-logger.setLevel(logging.INFO)
 # logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.WARNING)
 
 
 def history_by_frequency(history):
@@ -272,9 +272,9 @@ class Classroom:
 
         histo = self.histogram_partner_data()
 
-        logger.info("Histogram of Pairing Frequency")
+        print("Histogram of Pairing Frequency")
         for n_times in sorted(histo.keys()):
-            logger.info("%s = %s", n_times, int(histo[n_times] / 2))
+            print(f"{n_times} : {int(histo[n_times] / 2)}")
 
     def calculate_n_groups(self, n_members, n_students=None, groups=None):
         """
@@ -422,6 +422,7 @@ def cli(n_members=None, f_group=None, f_history=None, f_students=None):
 
     classroom = Classroom()
 
+    print("Loading students from file...")
     classroom.load_students(filename=f_students)
 
     classroom.load_student_history(filename=f_history)
@@ -430,6 +431,7 @@ def cli(n_members=None, f_group=None, f_history=None, f_students=None):
 
     classroom.calculate_n_groups(n_members)
 
+    print("Forming groups...")
     classroom.form_groups()
 
     print("")
@@ -437,12 +439,14 @@ def cli(n_members=None, f_group=None, f_history=None, f_students=None):
     print("")
     print(classroom.str_groups())
 
+    print("Backing up and writing group file...\n")
     classroom.store_groups(filename=f_group)
 
     classroom.update_student_history()
 
     classroom.print_partner_data()
 
+    print("\nBacking up and writing history file...")
     classroom.store_student_history(filename=f_history)
 
 
