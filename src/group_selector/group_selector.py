@@ -7,6 +7,7 @@ import json
 import logging
 import random
 from pathlib import Path
+from dataclasses import dataclass, field
 
 import click
 
@@ -38,6 +39,7 @@ def history_by_frequency(history):
     return dict_freq
 
 
+@dataclass
 class Student:
     """The Student class describes a student in the classroom
 
@@ -50,30 +52,21 @@ class Student:
     history    : student's history of working with other students
     """
 
-    def __init__(self, id_number, last_name, first_name, gender=None, history=None):
-        self.gender = gender
-        if self.gender is not None:
-            self.gender = self.gender[0].lower()
-            if self.gender not in ("m", "f"):
-                msg = "Please provide gender as 'm' or 'f'."
+    id_number: int
+    last_name: str
+    first_name: str
+    gender: str
+    history: dict = field(default_factory=dict)
+    history_freq: dict = field(default_factory=dict, repr=False)
+
+    def __post_init__(self):
+        if self.gender is not None: 
+            self.gender = self.gender[0].lower() 
+            if self.gender not in ("m", "f"): 
+                msg = "Please provide gender as 'm' or 'f'." 
                 raise ValueError(msg)
 
-        self.last_name = last_name
-        self.first_name = first_name
-        self.id_number = id_number
-        if history is None:
-            self.history = {}
-        else:
-            self.history = history
-
-    def __repr__(self):
-        return (
-            f"{self.__class__.__name__}("
-            f"{self.id_number}, {self.first_name!r},"
-            f"{self.last_name!r}, {self.gender!r}, "
-            f"{self.history}"
-            f")"
-        )
+        self.history_freq = history_by_frequency(self.history)
 
 
 class Group:
