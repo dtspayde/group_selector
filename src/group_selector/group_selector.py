@@ -6,8 +6,8 @@ import datetime
 import json
 import logging
 import random
-from pathlib import Path
 from dataclasses import dataclass, field
+from pathlib import Path
 
 import click
 
@@ -57,23 +57,20 @@ class Student:
     first_name: str
     gender: str
     history: dict = field(default_factory=dict)
-    history_freq: dict = field(default_factory=dict, repr=False)
 
     def __post_init__(self):
-        if self.gender is not None: 
-            self.gender = self.gender[0].lower() 
-            if self.gender not in ("m", "f"): 
-                msg = "Please provide gender as 'm' or 'f'." 
+        if self.gender is not None:
+            self.gender = self.gender[0].lower()
+            if self.gender not in ("m", "f"):
+                msg = "Please provide gender as 'm' or 'f'."
                 raise ValueError(msg)
 
-        self.history_freq = history_by_frequency(self.history)
 
-
+@dataclass
 class Group:
     """The group class contains a collection of students to work together"""
 
-    def __init__(self):
-        self.students = []
+    students: list[Student] = field(default_factory=list[Student])
 
     def __iter__(self):
         return iter(self.students)
@@ -333,6 +330,7 @@ class Classroom:
             random.shuffle(student_list)
             student = student_list.pop()
             group_history = student.history.copy()
+            logger.debug("First group member is %s.", student)
         else:
             freq_history = history_by_frequency(group_history)
             n_times, possible_student_ids = freq_history.popitem(last=False)
