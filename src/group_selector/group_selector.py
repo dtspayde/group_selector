@@ -106,16 +106,16 @@ class Group:
         return not 0 < n_f < n_m
 
 
+@dataclass
 class Classroom:
     """Classroom is a collection of all Students that compose the class"""
 
-    def __init__(self):
-        self.students = []
-        self.n_students = 0
-        self.student_ids = []
-        self.dict_history = {}
-        self.groups = []
-        self.shape_groups = {}
+    students: list = field(default_factory=list)
+    n_students: int = 0
+    student_ids: list = field(default_factory=list)
+    dict_history: dict = field(default_factory=dict)
+    groups: list = field(default_factory=list)
+    shape_groups: dict = field(default_factory=dict)
 
     def str_groups(self, groups=None):
         """This function returns a string with the groups in Markdown
