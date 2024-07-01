@@ -17,7 +17,7 @@ formatter = logging.Formatter("%(asctime)s %(name)-6s %(levelname)-8s %(message)
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 # logger.setLevel(logging.DEBUG)
-logger.setLevel(logging.WARNING)
+logger.setLevel(logging.INFO)
 
 
 def history_by_frequency(history):
@@ -116,6 +116,7 @@ class Classroom:
     dict_history: dict = field(default_factory=dict)
     groups: list = field(default_factory=list)
     shape_groups: dict = field(default_factory=dict)
+    n_fails: int = 0
 
     def str_groups(self, groups=None):
         """This function returns a string with the groups in Markdown
@@ -275,6 +276,7 @@ class Classroom:
         print("Histogram of Pairing Frequency")
         for n_times in sorted(histo.keys()):
             print(f"{n_times} : {int(histo[n_times] / 2)}")
+        print(f"It took {self.n_fails + 1} attempts to find a set of groups.")
 
     def calculate_n_groups(self, n_members, n_students=None, groups=None):
         """
@@ -383,6 +385,7 @@ class Classroom:
                     else:
                         logger.info("Failed composition check")
                         success = False
+                        self.n_fails += 1
                         break
                 if not success:
                     break
