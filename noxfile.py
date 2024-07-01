@@ -1,10 +1,13 @@
 from __future__ import annotations
 
 import argparse
+import os
 import shutil
 from pathlib import Path
 
 import nox
+
+os.environ.update({"PDM_IGNORE_SAVED_PYTHON": "1"})
 
 DIR = Path(__file__).parent.resolve()
 
@@ -36,7 +39,7 @@ def tests(session: nox.Session) -> None:
     """
     Run the unit and regular tests.
     """
-    session.install(".[test]")
+    session.run_always("pdm", "install", "-dG", "test", external=True)
     session.run("pytest", *session.posargs)
 
 
