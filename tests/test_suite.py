@@ -1,30 +1,37 @@
-# ruff: noqa: PT027
 from __future__ import annotations
 
 import unittest
+
+import pytest
 
 import group_selector.group_selector as m
 
 
 class TestClassStudent(unittest.TestCase):
     def test_no_id_number(self):
-        self.assertRaises(TypeError, m.Student, last_name="Smith", first_name="John")
+        with pytest.raises(TypeError):
+            m.Student(last_name="Smith", first_name="John")
 
     def test_no_last_name(self):
-        self.assertRaises(TypeError, m.Student, id_number=1, first_name="John")
+        with pytest.raises(TypeError):
+            m.Student(id_number=1, first_name="John")
 
     def test_no_first_name(self):
-        self.assertRaises(TypeError, m.Student, id_number=1, last_name="Smith")
+        with pytest.raises(TypeError):
+            m.Student(id_number=1, last_name="Smith")
 
     def test_wrong_gender(self):
-        self.assertRaises(
-            ValueError,
-            m.Student,
-            id_number=1,
-            last_name="Smith",
-            first_name="John",
-            gender="c",
-        )
+        msg = "Please provide gender as 'm' or 'f'."
+        with pytest.raises(ValueError, match=msg):
+            m.Student(id_number=1, last_name="Smith", first_name="John", gender="c")
+        # self.assertRaises(
+        #     ValueError,
+        #     m.Student,
+        #     id_number=1,
+        #     last_name="Smith",
+        #     first_name="John",
+        #     gender="c",
+        # )
 
 
 class TestClassGroup(unittest.TestCase):
