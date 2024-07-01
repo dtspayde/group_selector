@@ -142,3 +142,5 @@ src/*/_version.py
 
 # pdm files
 .pdm-python
+
+tests/*.txt
