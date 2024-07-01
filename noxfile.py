@@ -19,7 +19,8 @@ def lint(session: nox.Session) -> None:
     """
     Run the linter.
     """
-    session.install("pre-commit")
+    # session.install("pre-commit")
+    session.run_always("pdm", "install", "-dG", "lint", external=True)
     session.run("pre-commit", "run", "--all-files", *session.posargs)
 
 
