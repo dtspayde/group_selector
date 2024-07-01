@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# ruff: noqa: SIM113
 from __future__ import annotations
 
 import json
