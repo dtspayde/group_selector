@@ -39,6 +39,7 @@ Homepage = "https://github.com/dtspayde/group_selector"
 "Bug Tracker" = "https://github.com/dtspayde/group_selector/issues"
 Discussions = "https://github.com/dtspayde/group_selector/discussions"
 Changelog = "https://github.com/dtspayde/group_selector/releases"
+
 [tool.pytest.ini_options]
 minversion = "6.0"
 addopts = ["-ra", "--showlocals", "--strict-markers", "--strict-config"]
@@ -93,6 +94,10 @@ extend-ignore = [
   "PLR",    # Design related pylint codes
   "E501",   # Line too long
   "PT004",  # Use underscore for non-returning fixture (use usefixture instead)
+  "E111",
+  "E114",
+  "E117",
+  "ISC001",
 ]
 typing-modules = ["group_selector._compat.typing"]
 unfixable = [
@@ -106,23 +111,6 @@ isort.required-imports = ["from __future__ import annotations"]
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = ["T20"]
 "noxfile.py" = ["T20"]
-
-
-[tool.pylint]
-py-version = "3.8"
-ignore-paths= ["src/group_selector/_version.py"]
-reports.output-format = "colorized"
-similarities.ignore-imports = "yes"
-messages_control.disable = [
-  "design",
-  "fixme",
-  "line-too-long",
-  "missing-module-docstring",
-  "wrong-import-position",
-]
-
-[tool.pylint.refactoring]
-max-nested-blocks = 6
 
 [tool.codespell]
 ignore-words-list = "damon"
